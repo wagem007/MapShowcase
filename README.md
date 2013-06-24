@@ -1,0 +1,4 @@
+MapShowcase
+===========
+
+A showcase application
