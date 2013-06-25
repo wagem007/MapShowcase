@@ -10,6 +10,7 @@
 <script>
 Craydent.DEBUG_MODE = true;
 	var specs = {
+		shortcuts:maplist,
 		chiclets:[
 			{
 				display:'Soil Survey',
@@ -44,7 +45,34 @@ Craydent.DEBUG_MODE = true;
 		]
 	}
 
-	var showcase = new MapShowcase(specs);
+	var showcase1 = new MapShowcase(specs);
+	
+	specs = {
+		shortcuts:maplist,
+		tabs:[
+			{
+				display:'World Imagery',
+				image:'world_imagery',
+				webmap:'716b600dbbac433faa4bec9220c76b3a'
+			},
+			{
+				display:'NaturalVue',
+				image:'naturalvue',
+				webmap:'23961c1451f6410daf294e6fda10ce1f'
+			},
+			{
+				display:'Tasseled Cap',
+				image:'tasseled',
+				webmap:'66177529d9a34c9c9ffdbe5c41857a33'
+			}
+		]
+	}
+	
+	var showcase2 = new MapShowcase(specs);
+	
+	
+	
+	
 	dojo.require("esri.map");
 	dojo.require("esri.arcgis.utils");
 	dojo.require("esri.layers.graphics");

@@ -18,6 +18,7 @@ if (typeof jQuery == 'undefined') {
 }
 scripts.push(
 	/*"libs/craydent-1.7.11.js",*/
+	"maplist.html",
 	"libs/craydent-1.7.11.min.js",
 	"mapShowcase.jquery.craydent.js"
 );

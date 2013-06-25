@@ -1,6 +1,6 @@
 // List of map shortcuts
 
-var shortcuts = [
+var mapList = [
 	{
 		display:'World Imagery',
 		image:'world_imagery',

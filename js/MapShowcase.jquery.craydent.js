@@ -12,6 +12,7 @@ function MapShowcase(specs){
 	}
 
 	this.specs = $.extend({},this.defaults,specs);
+	this.shortcuts = this.specs.shortcuts || [];
 	this.maps=[];
 /*-------------------------------------------------------------------->
 	1 | RENDER
@@ -127,12 +128,14 @@ function MapShowcase(specs){
 		chiclets = this.specs.chiclets,
 		defaultwebmap = this.specs.defaultwebmap || chiclets[0],
 		MS = this,
+		active ='',
 		action = function(webmapid){return 'onclick="__MS['+MS.showcaseIndex+'].toggleChicletMap(this);"';},
 		html = 
 			"<div id='"+this.ID+"-chiclets' class='ms-chiclets-menu'>";
 			chiclets.map(function(chic,i){
+				active = (chic.webmap == defaultwebmap.webmap)?'active':'';
 				html+= 
-					"<div id='"+MS.ID+"-chiclet-"+i+"' "+action(chic.webmap)+" class='ms-chiclet'"+
+					"<div id='"+MS.ID+"-chiclet-"+i+"' "+action(chic.webmap)+" class='ms-chiclet "+active+"'"+
 					" data-webmap='"+chic.webmap+"' data-ms='"+MS.ID+"'>"+
 						"<img class='chiclet-image' src='graphics/icons/"+chic.image+".jpg'/>"+
 						"<div class='ms-chiclet-label'>"+chic.display+"</div>"+
@@ -166,6 +169,16 @@ function MapShowcase(specs){
 	
 	}
 	
+
+
+this.getWebmap = function(wmid){
+	var wm = this.shortcuts.filter(function(w){
+		return (w.webmap == wmid || widisplay == wmid);
+	})[0]||false;
+	
+	return wm;
+	
+}
 	
 	window.__MS = window.__MS || [];
 	this.showcaseIndex = window.__MS.length;
@@ -180,3 +193,4 @@ function MapShowcase(specs){
 function getMS(index){
 	return window.__MS[((String(index)).replace('MS',''))];
 }
+
