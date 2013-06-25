@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="_include.js"></script>
+
+<title>Map Showcase Demo</title>
+
+</head>
+<script>
+Craydent.DEBUG_MODE = true;
+	var specs = {
+		chiclets:[
+			{
+				display:'Soil Survey',
+				image:'soils',
+				webmap:'0edea1c7bbb84ba5842d20483af11679'
+			},
+			{
+				display:'Shaded Relief',
+				image:'relief',
+				webmap:'3c93bbf238424a3e85aae19823fc92ea'
+			},
+			{
+				display:'Geology',
+				image:'geology',
+				webmap:'74a8f6645ab44c4f82d537f1aa0e375d'
+			},
+			{
+				display:'Recent Earthquakes',
+				image:'quakes',
+				webmap:'d2dce7d20f214c8e8b78528a445c0e33'
+			},
+			{
+				display:'Weather Warnings',
+				image:'warnings',
+				webmap:'a03a49082c1c4e869c6349d9cdccf2a3'
+			},
+			{
+				display:'Recent Precipitation',
+				image:'precip',
+				webmap:'8e0329d17a9c4d7da5d38a11135a7180'
+			}
+		]
+	}
+
+	var showcase = new MapShowcase(specs);
+	dojo.require("esri.map");
+	dojo.require("esri.arcgis.utils");
+	dojo.require("esri.layers.graphics");
+</script>
+
+<body>
+
+</body>
+</html>

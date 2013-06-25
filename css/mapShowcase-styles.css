@@ -1,0 +1,76 @@
+@charset "utf-8";
+/* Map Showcase CSS */
+
+.ui-block{
+	top:0;
+	left:0;
+	right:0;
+	bottom:0;
+	position:absolute;
+}
+
+.map-showcase{
+	width:720px;
+	height:400px;
+	position:relative;
+	background:#eee;
+}
+
+.clear{clear:both;}
+
+.map-showcase *{
+	margin:0;
+	padding:0;
+}
+/*-------------------------------------------------------------------->
+	1 | MAP
+<--------------------------------------------------------------------*/
+
+.ms-map{
+	position:absolute;
+	top:0;
+	right:0;
+	bottom:0;
+	left:0;
+	
+	display:none;
+}
+.ms-map.active{display:block;}
+
+/*-------------------------------------------------------------------->
+	2 | CHICLETS
+<--------------------------------------------------------------------*/
+.ms-chiclets-menu {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+}
+.ms-chiclet {
+    float: left;
+    margin: 5px;
+    box-shadow: 0 0 3px 0 rgba(0,0,0,.5);
+    cursor: pointer;
+	height: 54px;
+	width: 54px;	
+}
+.chiclet-image {
+    width: 48px;
+    height: 48px;
+    border: 3px solid #fff;
+}
+
+.active .chiclet-image {border-color:#f36f20;}
+
+.ms-chiclet-label {
+    width: 100px;
+    color: #fff;
+    background: #000;
+    text-align: center;
+    margin-left: -22px;
+	display:none;
+}
+
+
+.ms-chiclet:hover .ms-chiclet-label{
+	display:block;
+}
