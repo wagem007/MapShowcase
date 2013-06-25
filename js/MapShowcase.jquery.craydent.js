@@ -19,9 +19,18 @@ function MapShowcase(specs){
 <--------------------------------------------------------------------*/
 	this.initRender = function(){
 		dojo.addOnLoad(function(){
-			var MS = this.__MS[this.__MS.length-1];
-			$(MS.specs.container).html(MS.render());
+			var MS = this.__MS[window.__MSloaded];
+			var conDom = (MS.specs.container == "body")?"body":"#"+MS.specs.container;
+			var appClass = 'map-showcase-app';
+			MS.specs.chiclets && (appClass += " chiclets-app");
+			MS.specs.tabs && (appClass += " tabs-app");
+			
+			$(conDom).html(MS.render())
+			.addClass(appClass);
 			MS.specs.chiclets && MS.initChicletMap();
+			MS.specs.tabs && MS.initTabMap();
+			
+			window.__MSloaded++;
 		})
 	}
 	
@@ -31,7 +40,7 @@ function MapShowcase(specs){
 			"<div class='map-showcase'>"+
 				this.renderMapDiv()+
 				((this.specs.chiclets && this.renderChicletMenu())||'')+
-		
+				((this.specs.tabs && this.renderTabMenu())||'')+		
 			"</div>";
 	
 		return html;
@@ -45,17 +54,17 @@ function MapShowcase(specs){
 		var html=
 		"<div id='"+this.ID+"-map' class='ms-map-container' data-ms='"+this.showcaseIndex+"'>"+
 			this.renderChicletMapDivs()+
-		
+			this.renderTabMapDivs()+
 		"</div>";
 		return html;
 	}
 
-	this.initMap = function(webmapid,div){
+	this.initMap = function(webmapid,div,chiclet,tab){
 		var 
 		webmapid = webmapid || this.specs.defaultwebmap || '8b3b470883a744aeb60e5fff0a319ce7',
-		mapSpecs = {
-			extent:this.currentExtent||null
-		}
+		mapSpecs = {};
+		(this.currentExtent && chiclet) && (mapSpecs.extent = this.currentExtent);
+		
 		
 		esri.arcgis.utils.createMap(webmapid,div||this.ID+'-map',{mapOptions:mapSpecs})//,{mapOptions:{}})
 			.then(function(response){
@@ -90,7 +99,7 @@ function MapShowcase(specs){
 		if(mscontainer.hasClass('active') && (delta.x || delta.y)){
 			getMS(mscontainer.dataset.ms).currentExtent = this.extent;
 		}
-		logit(ext);
+		//logit(ext);
 	}
 /*-------------------------------------------------------------------->
 	3 | Chiclets
@@ -100,7 +109,7 @@ function MapShowcase(specs){
 		webmapid = webmapid || (this.specs.defaultwebmap || this.specs.chiclets[0]).webmap;
 		div = this.ID+'-'+webmapid;
 		
-		this.initMap(webmapid,div);
+		this.initMap(webmapid,div,true,false);
 	}
 	
 	this.renderChicletMapDivs = function(){
@@ -168,8 +177,76 @@ function MapShowcase(specs){
 		$('#'+domid).addClass('active').siblings().removeClass('active');
 	
 	}
+/*-------------------------------------------------------------------->
+	4 | Tabs
+<--------------------------------------------------------------------*/	
+	this.initTabMap = function(webmapid,div){
+		webmapid = webmapid || (this.specs.defaultwebmap || this.specs.tabs[0]).webmap;
+		div = this.ID+'-'+webmapid;
+		
+		this.initMap(webmapid,div,false,true);
+	}
 	
-
+	this.renderTabMapDivs = function(){
+		if(!this.specs.tabs){return '';}
+		var 
+		tabs = this.specs.tabs,
+		defaultwebmap = this.specs.defaultwebmap || tabs[0],
+		MS = this,
+		active,
+		html="";
+		
+		tabs.map(function(tab,i){
+			active = (tab.webmap == defaultwebmap.webmap)?'active':'';
+			html+= 
+				"<div id='"+MS.ID+"-"+tab.webmap+"' class='ms-tab-map ms-map "+active+"' "+
+				"data-ms='"+MS.ID+"' data-webmap='"+tab.webmap+"'>"+
+				//chic.display+
+				"</div>";
+		})
+		return html;
+	}
+	this.renderTabMenu = function(){
+		var 
+		tabs = this.specs.tabs,
+		defaultwebmap = this.specs.defaultwebmap || tabs[0],
+		MS = this,
+		active ='',
+		action = function(webmapid){return 'onclick="__MS['+MS.showcaseIndex+'].toggleTabMap(this);"';},
+		html = 
+			"<div id='"+this.ID+"-tabs' class='ms-tabs-menu'>";
+			tabs.map(function(tab,i){
+				active = (tab.webmap == defaultwebmap.webmap)?'active':'';
+				html+= 
+					"<div id='"+MS.ID+"-tab-"+i+"' "+action(tab.webmap)+" class='ms-tab "+active+"'"+
+					" data-webmap='"+tab.webmap+"' data-ms='"+MS.ID+"'>"+
+						//"<img class='chiclet-image' src='graphics/icons/"+chic.image+".jpg'/>"+
+						"<div class='ms-tab-label'>"+tab.display+"</div>"+
+					"</div>";
+			})			
+			
+		html+=
+			"<div class='clear'></div>"+
+			"</div>";
+	
+		return html;
+	}
+	this.toggleTabMap = function(tabDom){
+		var 
+			webmapid = tabDom.dataset['webmap'];
+			MS = getMS(tabDom.dataset['ms']);
+			domid = MS.ID+'-'+webmapid;
+		
+		$(tabDom).addClass('active').siblings().removeClass('active');
+	
+			
+		if($(domid).innerHTML == ''){
+			this.initTabMap(webmapid,domid);
+		}
+	
+		$('#'+domid).addClass('active').siblings().removeClass('active');
+	
+	}
 
 this.getWebmap = function(wmid){
 	var wm = this.shortcuts.filter(function(w){
@@ -183,6 +260,7 @@ this.getWebmap = function(wmid){
 	window.__MS = window.__MS || [];
 	this.showcaseIndex = window.__MS.length;
 	window.__MS[window.__MS.length] = this;
+	window.__MSloaded = window.__MSloaded || 0; 
 	this.ID = "MS"+this.showcaseIndex;
 	this.initRender();
 	return this;	
