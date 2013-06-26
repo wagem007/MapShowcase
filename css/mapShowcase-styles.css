@@ -40,6 +40,51 @@
 }
 .ms-map.active{display:block;}
 
+
+/*----------------------------->
+	B | Zoom slider
+<-----------------------------*/
+.map-showcase .esriSimpleSlider {
+    border-radius: 0;
+    box-shadow: 0 0 3px 0 rgba(0,0,0,.5);
+    border: 1px solid #eee;
+}
+.esriSimpleSliderIncrementButton {
+    border-bottom: 1px solid #bbb!important;
+}
+.esriSimpleSliderDecrementButton {
+    border-top: 1px solid #eee;
+}
+
+.esriSimpleSliderIncrementButton:hover,
+.esriSimpleSliderDecrementButton:hover {
+    background:#eee;
+}
+/*----------------------------->
+	C | Geocoder Widget
+<-----------------------------*/
+
+.simpleGeocoder {
+    z-index: 100;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+.map-showcase .simpleGeocoder .esriGeocoder {
+    border: 1px solid #eee;
+    box-shadow: 0 0 3px 0 rgba(0,0,0,.5);
+    border-radius: 0;
+    z-index: 20;
+    position: relative;
+}
+.map-showcase .simpleGeocoder .esriGeocoderResults {
+    border: 1px solid #eee;
+    border-radius: 0;
+    background: #f9f9f9;
+    box-shadow: 0 0 3px 0 rgba(0,0,0,.5);
+    margin-top: 0px;
+}
+
 /*-------------------------------------------------------------------->
 	2 | CHICLETS
 <--------------------------------------------------------------------*/
@@ -62,7 +107,8 @@
     border: 3px solid #fff;
 }
 
-.active .chiclet-image {border-color:#f36f20;}
+.ms-chiclet:hover .chiclet-image {border-color:#eee;}
+.ms-chiclet.active .chiclet-image {border-color:#f36f20;}
 
 .ms-chiclet-label {
     width: 100px;
@@ -97,6 +143,10 @@
     padding: 0 10px;
     margin-top: 4px;
     cursor: pointer;
+	box-shadow: 0 0 1px 0 rgba(0,0,0,.5);
+}
+.ms-tab:hover {
+    background: #ddd;
 }
 .ms-tab.active {
     background: #fff;

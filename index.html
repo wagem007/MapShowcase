@@ -13,6 +13,9 @@ Craydent.DEBUG_MODE = true;
 		container:'showcase1',
 		shortcuts:maplist,
 		chiclets:[
+		"Soil Survey","Shaded Relief","Geology","Recent Earthquakes","Weather Warnings","Recent Precipitation"
+		]
+		/*[
 			{
 				display:'Soil Survey',
 				image:'soils',
@@ -43,7 +46,7 @@ Craydent.DEBUG_MODE = true;
 				image:'precip',
 				webmap:'8e0329d17a9c4d7da5d38a11135a7180'
 			}
-		]
+		]*/
 	}
 
 	var showcase1 = new MapShowcase(specs);
@@ -51,8 +54,8 @@ Craydent.DEBUG_MODE = true;
 	specs = {
 		container:'showcase2',
 		shortcuts:maplist,
-		tabs:[
-			{
+		tabs:["World Imagery","NaturalVue","Tasseled Cap"]
+		/*	[{
 				display:'World Imagery',
 				image:'world_imagery',
 				webmap:'716b600dbbac433faa4bec9220c76b3a'
@@ -67,23 +70,27 @@ Craydent.DEBUG_MODE = true;
 				image:'tasseled',
 				webmap:'66177529d9a34c9c9ffdbe5c41857a33'
 			}
-		]
+		]*/
 	}
 	
 	var showcase2 = new MapShowcase(specs);
 	
+	specs = {
+		container:'showcase3',
+		shortcuts:maplist,
+		tabs:["f4833059b13340759b35914928e3f61a","cbebbe46158f4f62be4ad17e9304b4af","59357ba9bd06409a99c0eb89f9089a40"],
+		geocoder:true
+	}
+	var showcase3 = new MapShowcase(specs);	
 	
 	
-	
-	dojo.require("esri.map");
-	dojo.require("esri.arcgis.utils");
-	dojo.require("esri.layers.graphics");
+
 </script>
 
 <body>
 
 <div id="showcase1"></div>
 <div id="showcase2"></div>
-
+<div id='showcase3'></div>
 </body>
 </html>

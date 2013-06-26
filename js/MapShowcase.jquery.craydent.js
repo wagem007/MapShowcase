@@ -22,13 +22,34 @@ function MapShowcase(specs){
 			var MS = this.__MS[window.__MSloaded];
 			var conDom = (MS.specs.container == "body")?"body":"#"+MS.specs.container;
 			var appClass = 'map-showcase-app';
-			MS.specs.chiclets && (appClass += " chiclets-app");
-			MS.specs.tabs && (appClass += " tabs-app");
+			if(MS.specs.chiclets){
+				appClass += " chiclets-app";
+				MS.specs.chiclets.map(function(chic,i){
+					if($.type(chic) == "string"){
+						MS.specs.chiclets[i] = MS.getWebmap(chic);
+					}
+				})
+			}
+			if(MS.specs.tabs){
+				appClass += " tabs-app";
+				MS.specs.tabs.map(function(tab,i){
+					if($.type(tab) == "string"){
+						MS.specs.tabs[i] = MS.getWebmap(tab);
+					}
+				})
+			}
+			if(MS.specs.geocoder){
+				appClass += " geocoder-app";
+			}
 			
-			$(conDom).html(MS.render())
+		//	MS.specs.tabs && (appClass += " tabs-app");
+			MS.container = $(conDom);
+			MS.container.html(MS.render())
 			.addClass(appClass);
+			
 			MS.specs.chiclets && MS.initChicletMap();
 			MS.specs.tabs && MS.initTabMap();
+			MS.specs.geocoder && MS.initGeocoder();
 			
 			window.__MSloaded++;
 		})
@@ -41,6 +62,8 @@ function MapShowcase(specs){
 				this.renderMapDiv()+
 				((this.specs.chiclets && this.renderChicletMenu())||'')+
 				((this.specs.tabs && this.renderTabMenu())||'')+		
+				//((this.specs.geocoder && this.renderGeocoderDiv())||'')+		
+				
 			"</div>";
 	
 		return html;
@@ -55,6 +78,7 @@ function MapShowcase(specs){
 		"<div id='"+this.ID+"-map' class='ms-map-container' data-ms='"+this.showcaseIndex+"'>"+
 			this.renderChicletMapDivs()+
 			this.renderTabMapDivs()+
+			this.renderGeocoderDiv()+
 		"</div>";
 		return html;
 	}
@@ -68,36 +92,21 @@ function MapShowcase(specs){
 		
 		esri.arcgis.utils.createMap(webmapid,div||this.ID+'-map',{mapOptions:mapSpecs})//,{mapOptions:{}})
 			.then(function(response){
-			var MS = getMS(response.map.container.dataset['ms']);
+			var MS = getMS($(response.map.container).data('ms'));
 			//MS.extent = response.map.
 			if(MS.maps.length == 0){
 				MS.currentExtent = response.map.extent;
 			}
 			MS.maps.push(response.map);
+			MS.geocoder && (MS.geocoder.map = response.map);
 			dojo.connect(response.map,'onExtentChange',MS.extentChangeHandler);
-			//alert(response);
-			/*__MWAref.map = response.map;
-			__MWAref.graphicsLayer = response.map.graphics;
-			__MWAref.roomsLayer = new esri.layers.GraphicsLayer({id:"roomsLayer"});
-			__MWAref.locationsLayer = new esri.layers.GraphicsLayer({id:"locationsLayer"});
-			__MWAref.userLayer = new esri.layers.GraphicsLayer({id:"userLocation"});
-			__MWAref.map.addLayer(__MWAref.roomsLayer);
-			__MWAref.map.addLayer(__MWAref.locationsLayer);
-			__MWAref.map.addLayer(__MWAref.userLayer);
-			$(__MWAref.specs.container).addClass('map-ready');
-			//document.getElementById('MWA-map').innerHTML +='<div id="MWA-mapinfo-panel"></div>';
-			//$('#'+__MWAref.map.id).append('<div id="MWA-mapinfo-panel" style="display:none;"></div>');
-			dojo.connect(__MWAref.map,'onClick',__MWAref.hideMapInfoPanel);
-			dojo.connect(__MWAref.roomsLayer,'onClick',__MWAref.roomClickHandler);
-			dojo.connect(__MWAref.locationsLayer,'onClick',__MWAref.locationClickHandler);
-			dojo.connect(__MWAref.map,'onExtentChange',__MWAref.extentChangeHandler)*/
 		})
 	}
 
 	this.extentChangeHandler = function(ext,delta,r,e,f,i,u){
 		var mscontainer = $(this.__container).parents('.ms-map');
 		if(mscontainer.hasClass('active') && (delta.x || delta.y)){
-			getMS(mscontainer.dataset.ms).currentExtent = this.extent;
+			getMS(mscontainer.data('ms')).currentExtent = this.extent;
 		}
 		//logit(ext);
 	}
@@ -160,8 +169,9 @@ function MapShowcase(specs){
 
 	this.toggleChicletMap = function(chicDom){
 		var 
-			webmapid = chicDom.dataset['webmap'];
-			MS = getMS(chicDom.dataset['ms']);
+			data = $(chicDom).data(),
+			webmapid = data['webmap'],
+			MS = getMS(data['ms']),
 			domid = MS.ID+'-'+webmapid;
 		
 		$(chicDom).addClass('active').siblings().removeClass('active');
@@ -231,11 +241,14 @@ function MapShowcase(specs){
 	
 		return html;
 	}
+
 	this.toggleTabMap = function(tabDom){
 		var 
-			webmapid = tabDom.dataset['webmap'];
-			MS = getMS(tabDom.dataset['ms']);
-			domid = MS.ID+'-'+webmapid;
+			data = $(tabDom).data(),
+			webmapid = data['webmap'];
+			MS = getMS(data['ms']);
+			domid = MS.ID+'-'+webmapid,
+			map = MS.maps.filter(function(m){return m.id == domid;})[0]||null;
 		
 		$(tabDom).addClass('active').siblings().removeClass('active');
 	
@@ -245,12 +258,28 @@ function MapShowcase(specs){
 		}
 	
 		$('#'+domid).addClass('active').siblings().removeClass('active');
-	
+		MS.geocoder && (MS.geocoder.map = map);
 	}
 
+/*-------------------------------------------------------------------->
+	5 | Geocoder
+<--------------------------------------------------------------------*/	
+	this.initGeocoder = function(webmapid,div){
+		this.geocoder = new esri.dijit.Geocoder({
+          map: this.maps[0],
+          autoComplete: true
+        },this.ID+"-geocoder");
+        this.geocoder.startup();
+	}
+
+	this.renderGeocoderDiv = function(){
+		if(!this.specs.geocoder){return '';}
+		var html ="<div id='"+this.ID+"-geocoder' class='ms-geocoder-holder'></div>";
+		return html;
+	}
 this.getWebmap = function(wmid){
 	var wm = this.shortcuts.filter(function(w){
-		return (w.webmap == wmid || widisplay == wmid);
+		return (w.webmap == wmid || w.display == wmid);
 	})[0]||false;
 	
 	return wm;
@@ -272,3 +301,17 @@ function getMS(index){
 	return window.__MS[((String(index)).replace('MS',''))];
 }
 
+
+function getMapSpecs(map,hidelog){
+	var centergeo = esri.geometry.webMercatorToGeographic(map.extent.getCenter());
+	var specs = {
+		extent:map.extent,
+		centerPoint:map.extent.getCenter(),
+		centerGeo:[centergo.x,centergeo.y],
+		zoom:map.getZoom()		
+	};
+	if(!hidelog){
+		logit(specs);
+	}
+	return specs;
+}

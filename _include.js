@@ -46,7 +46,14 @@ includes+=
 '<meta name="apple-mobile-web-app-capable" content="yes">'+
 '<meta name="viewport" content="width=device-width, user-scalable=no,initial-scale=1.0">'+
 '<link rel="stylesheet" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4/js/esri/css/esri.css">'+
-'<script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4compact"></script>';
+'<script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4compact"></script>'+
+'	<script>\
+	dojo.require("esri.map");\
+	dojo.require("esri.arcgis.utils");\
+	dojo.require("esri.layers.graphics");\
+	dojo.require("esri.dijit.Geocoder");\
+	</script>\
+';
 
 
 document.write(includes);
